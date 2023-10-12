@@ -25,8 +25,11 @@
     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-30">
         <div class="pd-20 card-box height-100-p">
             <div class="profile-photo">
-                <a href="" class="edit-avatar"><i class="fa fa-pencil"></i></a>
+                <a href="javascript:;" onclick="event.preventDefault();document.getElementById
+                ('adminProfilePictureFile').click();"class="edit-avatar"><i class="fa fa-pencil"></i></a>
                 <img src="{{ $admin->picture }}" alt="" class="avatar-photo" id="adminProfilePicture">
+                <input type="file" name="adminProfilePictureFile" id="adminProfilePictureFile" class="d-none"
+                style="opacity:0">
 
             </div>
             <h5 class="text-center h5 mb-0" id="adminProfileName">{{ $admin->name }}</h5>
@@ -47,7 +50,24 @@
     <script>
         window.addEventListener('updateAdminInfo', function(event){
             $('#adminProfileName').html(event.detail.adminName);
-            $('#adminProfileEmail')html(event.detail.adminEmail);
+            $('#adminProfileEmail').html(event.detail.adminEmail);
         });
+
+        $('input[type="file"][name="adminProfilePictureFile"][id="adminProfilePictureFile"]').ijaboCropTool({
+          preview : '#adminProfilePicture',
+          setRatio:1,
+          allowedExtensions: ['jpg', 'jpeg','png'],
+          buttonsText:['CROP','QUIT'],
+          buttonsColor:['#30bf7d','#ee5155', -15],
+          processUrl:'{{ route("admin.change-profile-picture") }}',
+          withCSRF:['_token','{{ csrf_token() }}'],
+          onSuccess:function(message, element, status){
+            Livewire.emit('updateAdminSellerHeaderInfo');
+            alert(message);
+          },
+          onError:function(message, element, status){
+            alert(message);
+          }
+       });
     </script>
 @endpush

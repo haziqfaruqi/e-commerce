@@ -10,10 +10,8 @@ class AdminSellerHeaderProfileInfo extends Component
 {
     public $admin;
     public $seller;
+    public $listeners = ['updateAdminSellerHeaderInfo' => '$refresh'];
 
-    public $listeners = [
-        'updateAdminSellerHeaderInfo'=>'$refresh'
-    ];
 
     public function mount(){
         if( Auth::guard('admin')->check() ){
