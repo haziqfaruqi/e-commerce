@@ -5,12 +5,17 @@ namespace App\Livewire;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Admin;
+use Illuminate\Support\Facades\Hash;
+/*
+ * Summary of AdminProfileTabs
+ */
 class AdminProfileTabs extends Component
 {
     public $tab = null;
     public $tabname = 'personal_details';
     protected $queryString = ['tab'];
     public $name, $email, $username, $admin_id;
+    public $current_password, $new_password, $new_password_confirmation;
 
     public function selectTab($tab){
         $this->tab = $tab;
@@ -58,6 +63,32 @@ class AdminProfileTabs extends Component
     // ]);
     // }
 
+    public function updatePassword(){
+        // dd('helo');
+        $this->validate([
+            'current_password'=>[
+                'required', function($attribute, $value, $fail){
+                    if(!Hash::check($value, Admin::find(auth('admin')->id())->password)){
+                        return $fail(__('The current password is incorrect'));
+                    }
+                }
+            ],
+            'new_password'=>'required|min:5|max:45|confirmed'
+        ]);
+
+        // dd('VALIDATED!');
+
+        $query = Admin::findOrFail(auth('admin')->id())->update([
+            'password'=>Hash::make($this->new_password)
+        ]);
+
+        if($query){
+            $this->current_password = $this->new_password = $this->new_password_confirmation = null;
+            // $this->showToastr('success','Password successfull changed.');
+        }else{
+            // $this->showToastr('error','Something went wrong.');
+        }
+    }
     public function render()
     {
         return view('livewire.admin-profile-tabs');
